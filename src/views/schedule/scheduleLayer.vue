@@ -8,7 +8,7 @@
                 </p>
                 <div>
                     <Row>
-                        <Col span="8">
+                        <Col span="7">
                         <Card dis-hover>
                             <p slot="title">
                                 Step 1 : Add users
@@ -18,7 +18,7 @@
                             </row>
                         </Card>
                         </Col>
-                        <Col span="8" class="padding-left-10">
+                        <Col span="10" class="padding-left-10">
                         <Card dis-hover>
                             <p slot="title">
                                 Step 2 : Set up an on-call rotation
@@ -26,28 +26,34 @@
                             <Form ref="formInline" :label-width="90">
                                 <FormItem label="Rotation type">
                                     <Select size="small" style="width:150px" @on-change="changeSelect">
-                                                    <Option v-for="item in typeList" :value="item.value" :key="item.value">
-                                                        {{ item.label }}
-                                                    </Option>
-                                                </Select>
+                                                        <Option v-for="item in typeList" :value="item.value" :key="item.value">
+                                                            {{ item.label }}
+                                                        </Option>
+                                                    </Select>
                                 </FormItem>
                                 <component v-bind:is="which_to_show">
                                 </component>
                             </Form>
                             <Form>
                                 <FormItem>
-                                    <CheckboxGroup>
-                                        <Checkbox label="Restrict on-call shifts to specific times"></Checkbox>
+                                    <CheckboxGroup @on-change="render">
+                                        <Checkbox label="Restrict on-call shifts to specific times" ></Checkbox>
                                     </CheckboxGroup>
                                 </FormItem>
                             </Form>
                         </Card>
                         </Col>
-                        <Col span="8" class="padding-left-10">
+                        <Col span="7" class="padding-left-10">
                         <Card dis-hover>
                             <p slot="title">
                                 Step 3 : Start time for this layer
                             </p>
+                            <Form>
+                                <FormItem label="">
+                                    <DatePicker type="date" format='yyyy/MM/dd' size='small' style="width: 120px"></DatePicker>
+                                    <TimePicker format="HH:mm" size='small' style="width: 80px; margin-left: 6px  "></TimePicker>
+                                </FormItem>
+                            </Form>
                         </Card>
                         </Col>
                     </Row>
@@ -81,18 +87,33 @@
                 userSel: "userSel",
                 todos: 1,
                 userList: [],
-                selectUsers: []
+                selectUsers: [],
+                value: '' 
             };
         },
-        mounted(){
-                     axios.get('/schedule/users',{}).then(
-                            m=>{
-                            this.userList=m.data
-                            }
-                        )
-                },
+        mounted() {
+            axios.get('/schedule/users', {}).then(
+                m => {
+                    this.userList = m.data
+                }
+            )
+        },
         methods: {
-            addUserSel: function(){},
+            render () {
+                       this.$Modal.confirm({
+                                render: (h) => {
+                                    return h({
+                                        template: "<TimePicker   format=\"HH:mm\" size=\"small\"  style=\"width:80px ; margin-left: 6px \"/>" ,
+                                        on: {
+                                            input: (val) => {
+                                                this.value = val;
+                                            }
+                                        }
+                                    })
+                                }
+                            })
+                        },
+            addUserSel: function() {},
             changeSelect: function(val) { //切换组件显示
                 this.which_to_show = val;
             },
@@ -100,8 +121,7 @@
         components: {
             userSel: {
                 data() {
-                    return {
-                    }
+                    return {}
                 },
                 props: ['userList'],
                 template: "<row style='margin-bottom: 12px'><Select size=\"small\" style=\"width:200px\" @on-change='addUserSel' >" +
@@ -111,8 +131,8 @@
                     "                                    </Select>" +
                     "</row>",
                 methods: {
-                    addUserSel: function(){
-                    this.$emit('addUserSel');
+                    addUserSel: function() {
+                        this.$emit('addUserSel');
                     }
                 }
             },
@@ -121,7 +141,7 @@
             },
             weekly: { //layer 周模板
                 template: "<FormItem label=\"Rotation type\">" +
-                    " <Select size=\"small\" style=\"width:105px\" > " +
+                    " <Select size=\"small\" style=\"width:120px\" > " +
                     "               <Option v-for=\"item in weekList\" :value=\"item.value\" :key=\"item.value\">\n" +
                     "                  {{ item.label }}\n" +
                     "                </Option>" +
@@ -165,15 +185,15 @@
             },
             custom: { //layer 自定义模板
                 template: "<div><FormItem label=\"Shift length\">" +
-                    "<InputNumber size='small' :min='1'></InputNumber>"+
-                    " <Select size=\"small\" style=\"width:80px ;margin-left: 2px\" > " +
+                    "<InputNumber size='small' :min='1'></InputNumber>" +
+                    " <Select size=\"small\" style=\"width:120px ;margin-left: 2px\" > " +
                     "               <Option v-for=\"item in customtypeList\" :value=\"item.value\" :key=\"item.value\">\n" +
                     "                  {{ item.label }}\n" +
                     "                </Option>" +
                     "           </Select>" +
                     "</FormItem>" +
                     "<FormItem label=\"Handoff time\">" +
-                    "<DatePicker   type=\"date\" format='yyyy/MM/dd' size='small' style=\"width: 105px\"></DatePicker>" +
+                    "<DatePicker   type=\"date\" format='yyyy/MM/dd' size='small' style=\"width: 120px\"></DatePicker>" +
                     "<TimePicker format=\"HH:mm\" size='small' style=\"width: 80px; margin-left: 6px  \"></TimePicker>" +
                     "</FormItem></div>",
                 data: function() {
