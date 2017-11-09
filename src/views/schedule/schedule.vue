@@ -1,12 +1,4 @@
-<style lang="less">
-    ivu-form-item {
-        margin-bottom: 12px !important;
-        vertical-align: top;
-        zoom: 1;
-    }
-</style>
 <template>
-    <div>
         <Row>
             <Col span="20">
             <Card>
@@ -23,13 +15,9 @@
                                     <p slot="title">
                                         Step 1 : Add users
                                     </p>
-                                        <row
-                                                is="userSel"  :data="cityList"
-                                                v-for="(todo, index) in todos"
-                                                v-bind:value="todo.value"
-                                                v-bind:label="todo.label"
-                                                v-on:remove="todos.splice(index, 1)"
-                                        ></row>
+                                   <row   v-for="todo in todos" v-bind:key="todo" >
+                                     <userSel @addUserSel=addUserSel></userSel>
+                                   </row>
                                 </Card>
                                 </Col>
                                 <Col span="8" class="padding-left-10">
@@ -84,9 +72,7 @@
             </Card>
             </Col>
         </Row>
-    </div>
 </template>
-
 <script>
     export default {
         data() {
@@ -98,16 +84,8 @@
                 which_to_show: "daily",
                 model10: [],
                 userSel: "userSel",
-                todos: [{value: 'London', label: 'London'},{value: 'London', label: 'London'}],
-                cityList: [
-                    {value: '1', label: 'New York'},
-                    {value: '2', label: 'London'},
-                    {value: '3', label: 'Sydney'},
-                    {value: '4', label: 'Ottawa'},
-                    {value: '5', label: 'Paris'},
-                    {value: '6', label: 'Canberra'}
-                ]
-
+                todos: 1
+                
             };
         },
 
@@ -115,33 +93,41 @@
             changeSelect: function (val) {   //切换组件显示
                 this.which_to_show = val;
             },
-            addUser:function (val){
-                alert(val);
+            addUserSel:function (){
+                this.todos++
             }
         },
-
         components: {
             userSel: {
-//                props: ['cityList'],
-                template: "<row style='margin-bottom: 12px'><Select size=\"small\" style=\"width:200px\" @on-change='addUserSel' >" +
-                "                                        <Option v-for=\"item in this.$parent.cityList\" :value=\"item.value\" :key=\"item.value\">" +
-                "                                            {{ item.label }}" +
-                "                                        </Option>" +
-                "                                    </Select></row>",
-                methods: {
-                    addUserSel: function (obj) {
-//                        this.$emit('update:number',newNumber);
+                data () {
+                    return {
+                        cityList: [
+                            {value: '1', label: 'New York'},
+                            {value: '2', label: 'London'},
+                            {value: '3', label: 'Sydney'},
+                            {value: '4', label: 'Ottawa'},
+                            {value: '5', label: 'Paris'},
+                            {value: '6', label: 'Canberra'}
+                        ]
                     }
                 },
-                mounted(){
-                    alert();
-                    console.log(this.$parent.cityList);
+                template: "<row style='margin-bottom: 12px'><Select size=\"small\" style=\"width:200px\" @on-change='addUserSel' >" +
+                "                                        <Option v-for=\"item in cityList\" :value=\"item.value\" :key=\"item.value\">" +
+                "                                            {{ item.label }}" +
+                "                                        </Option>" +
+                "                                    </Select>"+
+                "<Icon style='margin-left: 6px' type='android-delete'></Icon>"+
+                "</row>",
+                methods: {
+                    addUserSel: function (obj) {
+                       this.$emit('addUserSel');
+                    }
                 },
             },
-            daily: { //第一个子组件
+            daily: { //layer 日模板
                 template: " <FormItem label=\"Rotation type\"><TimePicker format=\"HH:mm\" size=\"small\" style=\"width:150px\" type=\"time\" ></TimePicker></FormItem>"
             },
-            weekly: { //第二个子组件
+            weekly: { //layer 周模板
                 template: "<FormItem label=\"Rotation type\">" +
                 " <Select size=\"small\" style=\"width:105px\" > " +
                 "               <Option v-for=\"item in weekList\" :value=\"item.value\" :key=\"item.value\">\n" +
@@ -166,7 +152,7 @@
                 }
 
             },
-            custom: { //第三个子组件
+            custom: { //layer 自定义模板
                 template: "<div><FormItem label=\"Shift length\">" +
                 "<Input  size=\"small\"  style=\"width:105px\"></Input>" +
                 " <Select size=\"small\" style=\"width:80px ;margin-left: 2px\" > " +

@@ -17,6 +17,15 @@ module.exports = merge(webpackBaseConfig, {
         filename: '[name].js',
         chunkFilename: '[name].chunk.js'
     },
+    devServer: {
+        proxy: {
+          '/schedule': {
+            target: 'http://localhost:3000/',
+            pathRewrite: {'^/schedule' : ''},//后面可以使重写的新路径，一般不做更改
+            changeOrigin: true
+          }
+        }
+    },
     plugins: [
         new ExtractTextPlugin({
             filename: '[name].css',

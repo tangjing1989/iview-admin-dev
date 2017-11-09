@@ -213,7 +213,7 @@ export const appRouter = [
         name: 'errorpage',
         component: Main,
         children: [
-            { path: 'index', title: '排班', name: 'schedule', component: resolve => { require(['./views/schedule/schedule.vue'], resolve); } }
+            { path: 'index', title: '排班', name: 'schedule', component: resolve => { require(['./views/schedule/scheduleLayer.vue'], resolve); } }
         ]
     }
 ];
